@@ -53,8 +53,7 @@ class _DownloadedVideoState extends State<DownloadedVideo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            Platform.isAndroid ? '/emulated/0/Fb&InstaDownload':''),
+        title: Text('Downloads'),
       ),
       body: !checkFileExist?Center(
         child: Text(

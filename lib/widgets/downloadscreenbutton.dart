@@ -11,14 +11,20 @@ class DownloadScreenButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-          primary: color,
-          padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
-          textStyle: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold)),
-      onPressed: disEn? function: null,
-      child: Text(title),);
+    return Expanded(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            primary: color,
+            padding: EdgeInsets.symmetric( vertical: 15),
+            textStyle: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
+        onPressed: disEn? function: null,
+        child: FittedBox(
+          fit: BoxFit.fitWidth,
+            child: Text(title
+            )
+        ),),
+    );
   }
 }

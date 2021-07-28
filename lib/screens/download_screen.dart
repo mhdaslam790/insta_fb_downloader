@@ -212,7 +212,10 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(routePath?'FB download':'Insta download'),
+      ),
       body:  loading ? Column(
 
           mainAxisAlignment: MainAxisAlignment.center,
@@ -249,7 +252,7 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
                  ),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Paste link here',
+                  labelText: routePath?'Paste Facebook link here':'Paste Instagram link here',
                 ),
             ),
              ),
@@ -257,6 +260,7 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                SizedBox(width: 7,),
                 DownloadScreenButton(
                   title: 'Paste link',
                     color: Color(0xFF4A6572),
@@ -276,7 +280,7 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
                     setState(() {
                       enableButtonAndTxtField = false;
                     });
-                     //routePath ? await downFacebookVideo(myController.text): downloadInstagramvideo();
+                     routePath ? await downFacebookVideo(myController.text): downloadInstagramvideo();
                     setState(() {
                       enableButtonAndTxtField = true;
                     });
@@ -284,6 +288,7 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
                   },
                   disEn: enableButtonAndTxtField,
                 ),
+                SizedBox(width: 7,),
               ],
             ),
           ],
