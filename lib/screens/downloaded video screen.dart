@@ -22,16 +22,25 @@ class _DownloadedVideoState extends State<DownloadedVideo> {
 
   void direct() async {
     setState(()  {
-      if ((dir.listSync().length) > 0) {
-        print('exist');
-        fileList = dir.listSync();
-        checkFileExist = true;
+      if(Platform.isAndroid) {
+        if ((dir
+            .listSync()
+            .length) > 0) {
+          print('exist');
+          fileList = dir.listSync();
+          checkFileExist = true;
+        }
+        else {
+          print("file not exist");
+        }
       }
-      else {
-        print("file not exist");
-      }
+      else
+        {
+          print('check your ios gallery for download f ile');
+        }
       print(dir.listSync());
     });
+
   }
 
   @override
@@ -44,11 +53,12 @@ class _DownloadedVideoState extends State<DownloadedVideo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('/emulated/0/Fb&InstaDownload'),
+        title: Text(
+            Platform.isAndroid ? '/emulated/0/Fb&InstaDownload':''),
       ),
       body: !checkFileExist?Center(
         child: Text(
-          'Sorry, No Downloads Found!',
+          Platform.isAndroid?'Sorry, No Downloads Found!':'check your photos app for downloaded video',
           style: TextStyle(fontSize: 18.0),
         ),
       ):Container(

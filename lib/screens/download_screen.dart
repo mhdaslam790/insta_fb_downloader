@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:save_from_social_media/services/permission.dart';
 import 'package:save_from_social_media/widgets/downloadscreenbutton.dart';
 import 'package:flutter/services.dart';
 
@@ -29,17 +30,16 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
   late  bool routePath;
   late bool enableButtonAndTxtField= true;
   late bool checkUrl= false;
-  late bool popScreen=false;
   late Directory directory;
 
 
-  Future<bool> saveFile(String url, String fileName) async {
+  Future<bool> saveFile(String url) async {
 
     try{
       if(Platform.isAndroid)
         {
           if
-          (await _requestPermission(Permission.storage))
+          (await requestPermission(Permission.storage))
             {
               directory = (await getExternalStorageDirectory())!;
 
@@ -69,7 +69,7 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
         }
       else
         {
-          if(await _requestPermission(Permission.photos))
+          if(await requestPermission(Permission.photos))
             {
                directory = await getTemporaryDirectory();
             }
@@ -105,25 +105,7 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
     return false;
   }
 
-  Future<bool> _requestPermission(Permission permission) async
-  {
-    if(await permission.isGranted)
-      {
-        return true;
-      }
-    else
-      {
-        var result = await permission.request();
-        if(result == PermissionStatus.granted)
-          {
-            return true;
-          }
-        else
-          {
-          return false;
-        }
-      }
-  }
+
 
 
   downloadFile( String url) async {
@@ -131,14 +113,11 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
       loading = true;
     });
 
-    bool downloaded = await saveFile(url, '/ElephantsDream.mp4');
+    bool downloaded = await saveFile(url);
 
     //'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
     if(downloaded)
       {
-        setState(() {
-          popScreen = true;
-        });
         print('file downloaded');
       }
     else
@@ -190,7 +169,7 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
     print('in instagram download section');
     if(Platform.isAndroid)
     {
-      if (await _requestPermission(Permission.storage))
+      if (await requestPermission(Permission.storage))
       {
         directory = (await getExternalStorageDirectory())!;
 
@@ -297,7 +276,7 @@ class _DownloadScreenState extends State<DownloadScreen> with SingleTickerProvid
                     setState(() {
                       enableButtonAndTxtField = false;
                     });
-                     routePath ? await downFacebookVideo(myController.text): downloadInstagramvideo();
+                     //routePath ? await downFacebookVideo(myController.text): downloadInstagramvideo();
                     setState(() {
                       enableButtonAndTxtField = true;
                     });

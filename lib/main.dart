@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:save_from_social_media/screens/home_screen.dart';
+import 'package:save_from_social_media/services/permission.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,19 +19,22 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Directory dir = Directory('/storage/emulated/0/Fb&InstaDownload');
-  void createDirectory()
-  {
+
+  void createDirectory() async {
+    if(await requestPermission(Permission.storage))
+    {
     if(!dir.existsSync())
     {
-      new Directory(dir.path).create()
-      // The created directory is returned as a Future.
-          .then((Directory directory) {
-        print("in direct function ${directory.path}");
-      });
+    new Directory(dir.path).create()
+    // The created directory is returned as a Future.
+        .then((Directory directory) {
+    print("in direct function ${directory.path}");
+    });
     }
     else
     {
-      print('already created');
+    print('already created');
+    }
     }
   }
   @override
