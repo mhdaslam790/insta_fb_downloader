@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:save_from_social_media/screens/home_screen.dart';
+import 'package:save_from_social_media/services/admob_service.dart';
 import 'package:save_from_social_media/services/permission.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  AdMobService.intialize();
   runApp(MyApp());
 }
 
@@ -18,7 +20,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Directory dir = Directory('/storage/emulated/0/Fb&InstaDownload');
+  Directory dir = Directory('/storage/emulated/0/Movies/Fb_Insta_downloader');
 
   void createDirectory() async {
     if(await requestPermission(Permission.storage))

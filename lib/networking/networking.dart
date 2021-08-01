@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 
-
 class Networking {
-
   Dio dio = new Dio();
 
   Future<dynamic> fetchPost(String urlString) async {
