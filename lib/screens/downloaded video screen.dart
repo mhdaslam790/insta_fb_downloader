@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-var path = '/storage/emulated/0/Movies/Fb_Insta_downloader';
+var path = '/storage/emulated/0/Movies/fb insta downloader';
 Directory dir = Directory(path);
 
 class DownloadedVideo extends StatefulWidget {

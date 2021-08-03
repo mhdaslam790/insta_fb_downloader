@@ -80,7 +80,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar:NavigationBarAd(width: 320,height: 50,)
+      //bottomNavigationBar:NavigationBarAd(width: 320,height: 50,)
     );
   }
 }
