@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
 import 'package:direct_link/direct_link.dart';
@@ -27,31 +28,31 @@ class DownloadScreen extends StatefulWidget {
 
 class _DownloadScreenState extends State<DownloadScreen>
     with SingleTickerProviderStateMixin {
-  static const platform = MethodChannel('MediaStoreAPI');
-  AdMobService _adMobService =AdMobService();
-  final myController = TextEditingController();
-  bool loading = false;
-  double progress = 0.0;
+  static const _platform = MethodChannel('MediaStoreAPI');
+  AdMobService _adMobService = AdMobService();
+  final _myController = TextEditingController();
+  bool _loading = false;
+  double _progress = 0.0;
   final Dio dio = Dio();
   DateTime now = DateTime.now();
-  late String videoUrl;
-  late bool routePath;
-  late bool enableButtonAndTxtField = true;
-  late bool checkUrl = false;
-  late Directory directory;
-  var data;
-  var text;
-  var finalUrl;
-  late String formattedDate;
-  late File savedFile;
-  late String name;
-  late String pathk;
-  int _i=0;
+  late String _videoUrl;
+  late bool _routePath;
+  late bool _enableButtonAndTxtField = true;
+  late bool _checkUrl = false;
+  late Directory _directory;
+  var _data;
+  var _text;
+  var _finalUrl;
+  late String _formattedDate;
+  late File _savedFile;
+  late String _name;
+  late String _pathk;
+  int _i = 0;
 
-  Future<void> saveFileInQOrHigher(String name, String filePath) async {
+  Future<void> _saveFileInAndroidStorage(String name, String filePath) async {
     try {
       print("inqor... $filePath ... $name");
-      await platform.invokeMethod(
+      await _platform.invokeMethod(
           'saveFileUsingMediaStoreAPI', {"filepath": filePath, "name": name});
       print("return from kotlin but in savefromQ function ");
     } on PlatformException catch (e) {
@@ -59,40 +60,40 @@ class _DownloadScreenState extends State<DownloadScreen>
     }
   }
 
-  Future<bool> saveFileToStorage(String url) async {
+  Future<bool> _saveFileToStorage(String url) async {
     try {
       if (Platform.isAndroid || Platform.isAndroid) {
         if (await requestPermission(Permission.storage) ||
             await requestPermission(Permission.photos)) {
-          directory = await getTemporaryDirectory();
-          print(directory.path);
+          _directory = await getTemporaryDirectory();
+          print(_directory.path);
         } else {
           return false;
         }
       }
-      if (!await directory.exists()) {
-        await directory.create(recursive: true);
+      if (!await _directory.exists()) {
+        await _directory.create(recursive: true);
       }
-      if (await directory.exists()) {
-        pathk = directory.path;
-        formattedDate = DateFormat('yyyy-MM-dd – kk:mm:ss').format(now);
-        savedFile = File(directory.path + "/video_$formattedDate.mp4");
-        print("printing savfile PAth  ${savedFile.path}");
-        await dio.download(url, savedFile.path,
+      if (await _directory.exists()) {
+        _pathk = _directory.path;
+        _formattedDate = DateFormat('yyyy-MM-dd – kk:mm:ss').format(now);
+        _savedFile = File(_directory.path + "/video_$_formattedDate.mp4");
+        print("printing savfile PAth  ${_savedFile.path}");
+        await dio.download(url, _savedFile.path,
             onReceiveProgress: (downloaded, totalSize) {
           setState(() {
-            progress = downloaded / totalSize;
+            _progress = downloaded / totalSize;
           });
         });
-        name = "/video_$formattedDate.mp4";
+        _name = "/video_$_formattedDate.mp4";
         if (Platform.isAndroid) {
-          await saveFileInQOrHigher(name, pathk);
+          await _saveFileInAndroidStorage(_name, _pathk);
         }
         if (Platform.isIOS) {
-          await ImageGallerySaver.saveFile(savedFile.path,
+          await ImageGallerySaver.saveFile(_savedFile.path,
               isReturnPathOfIOS: true);
         }
-        savedFile.delete();
+        _savedFile.delete();
         return true;
       }
     } catch (e) {
@@ -101,110 +102,118 @@ class _DownloadScreenState extends State<DownloadScreen>
     return false;
   }
 
-  Future downloadFile(String url) async {
+  Future _downloadFile(String url) async {
     setState(() {
-      loading = true;
+      _loading = true;
     });
 
-    bool downloaded = await saveFileToStorage(url);
+    bool downloaded = await _saveFileToStorage(url);
     print('in download function');
     if (downloaded) {
       print('file downloaded');
+      _showToast(context, 'File Downloaded');
     } else {
       print('error in download');
+      _showToast(context, 'Error while  Downloading file');
     }
     setState(() {
-      loading = false;
+      _loading = false;
     });
   }
 
-  Future<void> downFacebookVideo(String url) async {
-    if(_i<=3) {
+  Future<void> _downFacebookVideo(String url) async {
+    if (_i <= 3) {
       try {
         RegExp regExp = RegExp(
             r'^(?:(?:https?:)?\/\/)?(?:www\.)?facebook\.com\/[a-zA-Z0-9\.]+\/(videos)\/(?:[a-zA-Z0-9\.]+)');
-        checkUrl = regExp.hasMatch(url);
-        print(checkUrl);
-        if (checkUrl == true) {
-          text = regExp.firstMatch(url);
-          videoUrl = text!.group(0)!;
-          var check = await DirectLink.check(videoUrl);
+        _checkUrl = regExp.hasMatch(url);
+        print(_checkUrl);
+        if (_checkUrl == true) {
+          _showToast(context, 'fetching download URL');
+          _text = regExp.firstMatch(url);
+          _videoUrl = _text!.group(0)!;
+          var check = await DirectLink.check(_videoUrl);
           print(check);
           if (check != null) {
             print(check[0].quality);
             if (check.isEmpty) {
-              downFacebookVideo(url);
+              _downFacebookVideo(url);
             } else {
-              videoUrl = check[0].link;
-              print(videoUrl);
-              _i=4;
-              downloadFile(videoUrl);
+              _videoUrl = check[0].link;
+              print(_videoUrl);
+              _i = 4;
+              _downloadFile(_videoUrl);
             }
           }
+        } else {
+          _showToast(context, 'Link is not valid');
+          _i = 4;
         }
       } catch (e) {
         print("facebook catch body $e");
-        //   while (_i < 3) {
-        //     if (_i == 2) {
-        //       _i = 0;
-        //       break;
-        //     }
-        //     _i++;
-        //     downFacebookVideo(url);
-        //   }
-        // }
       }
+    } else {
+      _showToast(context, 'The link doesn\'t contain a valid URL ');
     }
-    else
-      {
-
-      }
-    //https://www.facebook.com/ArcadeCloudOriginals/videos/346705332874478
   }
 
-  Future downloadInstagramvideo(String url) async {
-    if (_i<=3) {
+  Future _downloadInstagramvideo(String url) async {
+    if (_i <= 3) {
       print("in ig download section");
-      //downloadFile('https://instagram.fbom44-1.fna.fbcdn.net/v/t50.2886-16/226368077_339184327904674_7440016640559613563_n.mp4?_nc_ht=instagram.fbom44-1.fna.fbcdn.net&_nc_cat=110&_nc_ohc=z9Yt32YPTQ8AX9UpNo8&edm=APfKNqwBAAAA&ccb=7-4&oe=6107245A&oh=c94ac7b8366d842e170b81d7bd252a9d&_nc_sid=74f7ba');
-
       try {
         RegExp regExp = RegExp(
             r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/p\/([a-zA-Z0-9_-]+)\/?|'
             r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/reel\/([a-zA-Z0-9_-]+)\/?|'
             r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/tv\/([a-zA-Z0-9_-]+)\/?');
-        checkUrl = regExp.hasMatch(url);
-        print(checkUrl);
-        if (checkUrl == true) {
-          text = regExp.firstMatch(url);
-          finalUrl = text!.group(0)! + '?__a=1';
-          print(finalUrl);
+        _checkUrl = regExp.hasMatch(url);
+        print(_checkUrl);
+        if (_checkUrl == true) {
+          _showToast(context, 'fetching download URL');
+          _text = regExp.firstMatch(url);
+          _finalUrl = _text!.group(0)! + '?__a=1';
+          print(_finalUrl);
           print('in instagram download section');
-          var response = await http.get(Uri.parse(finalUrl));
+          var response = await http.get(Uri.parse(_finalUrl));
           if (response.statusCode != null) {
             print(response.statusCode);
-            data = json.decode(response.body);
-            videoUrl = data['graphql']['shortcode_media']['video_url'];
-            _i=4;
-            downloadFile(videoUrl);
+            _data = json.decode(response.body);
+            _videoUrl = _data['graphql']['shortcode_media']['video_url'];
+            _i = 4;
+            _downloadFile(_videoUrl);
           }
+        } else {
+          _showToast(context, 'Link is not valid');
+          _i = 4;
         }
       } catch (e) {
-        // TODO
         print(e);
       }
+    } else {
+      _showToast(context, 'The link doesn\'t contain a valid URL ');
     }
   }
 
-  void updateUI(bool decideRoute) {
+  void _updateUI(bool decideRoute) {
     _adMobService.createInterstitialAd();
     setState(() {
-      routePath = decideRoute;
+      _routePath = decideRoute;
     });
+  }
+
+  void _showToast(BuildContext context, String str) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(str),
+        action: SnackBarAction(
+            label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
   }
 
   @override
   void initState() {
-    updateUI(widget.decideDownloadRoute);
+    _updateUI(widget.decideDownloadRoute);
     super.initState();
   }
 
@@ -213,9 +222,9 @@ class _DownloadScreenState extends State<DownloadScreen>
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(routePath ? 'FB download' : 'Insta download'),
+        title: Text(_routePath ? 'FB download' : 'Insta download'),
       ),
-      body: loading
+      body: _loading
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -223,7 +232,7 @@ class _DownloadScreenState extends State<DownloadScreen>
                   padding: const EdgeInsets.all(10.0),
                   child: LinearProgressIndicator(
                     minHeight: 10,
-                    value: progress,
+                    value: _progress,
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
@@ -248,14 +257,14 @@ class _DownloadScreenState extends State<DownloadScreen>
                       alignment: Alignment.topCenter,
                       width: MediaQuery.of(context).size.width,
                       child: TextField(
-                        controller: myController,
-                        enabled: enableButtonAndTxtField,
+                        controller: _myController,
+                        enabled: _enableButtonAndTxtField,
                         style: TextStyle(
                           fontSize: 20,
                         ),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: routePath
+                          labelText: _routePath
                               ? 'Paste Facebook link here'
                               : 'Paste Instagram link here',
                         ),
@@ -278,11 +287,11 @@ class _DownloadScreenState extends State<DownloadScreen>
                             ClipboardData? data =
                                 await Clipboard.getData('text/plain');
                             setState(() {
-                              myController.text = data!.text.toString();
+                              _myController.text = data!.text.toString();
                               // this will paste "copied text" to textFieldController
                             });
                           },
-                          disEn: enableButtonAndTxtField,
+                          disEn: _enableButtonAndTxtField,
                         ),
                         SizedBox(
                           width: 7,
@@ -292,44 +301,42 @@ class _DownloadScreenState extends State<DownloadScreen>
                           color: Color(0xFF442C2E),
                           function: () async {
                             setState(() {
-                              enableButtonAndTxtField = false;
+                              _enableButtonAndTxtField = false;
                             });
+
                             _adMobService.showIntAd();
-                            routePath
-                                ? await downFacebookVideo(myController.text)
-                                : await downloadInstagramvideo(
-                                    myController.text);
-                            if(_i<=3)
-                              {
-                                _i=_i+1;
-                                routePath
-                                    ? await downFacebookVideo(myController.text)
-                                    : await downloadInstagramvideo(
-                                    myController.text);
-                              }
-                            if(_i<=3)
-                            {
-                              _i=_i+1;
-                              routePath
-                                  ? await downFacebookVideo(myController.text)
-                                  : await downloadInstagramvideo(
-                                  myController.text);
+                            _routePath
+                                ? await _downFacebookVideo(_myController.text)
+                                : await _downloadInstagramvideo(
+                                    _myController.text);
+                            if (_i <= 3) {
+                              _i = _i + 1;
+                              _routePath
+                                  ? await _downFacebookVideo(_myController.text)
+                                  : await _downloadInstagramvideo(
+                                      _myController.text);
                             }
-                            if(_i<=3)
-                            {
-                              _i=_i+1;
-                              routePath
-                                  ? await downFacebookVideo(myController.text)
-                                  : await downloadInstagramvideo(
-                                  myController.text);
+                            if (_i <= 3) {
+                              _i = _i + 1;
+                              _routePath
+                                  ? await _downFacebookVideo(_myController.text)
+                                  : await _downloadInstagramvideo(
+                                      _myController.text);
                             }
-                            _i=0;
+                            if (_i <= 3) {
+                              _i = _i + 1;
+                              _routePath
+                                  ? await _downFacebookVideo(_myController.text)
+                                  : await _downloadInstagramvideo(
+                                      _myController.text);
+                            }
+                            _i = 0;
                             setState(() {
-                              enableButtonAndTxtField = true;
+                              _enableButtonAndTxtField = true;
                             });
                             // popScreen?Navigator.pop(context):null;
                           },
-                          disEn: enableButtonAndTxtField,
+                          disEn: _enableButtonAndTxtField,
                         ),
                         SizedBox(
                           width: 7,
@@ -339,7 +346,41 @@ class _DownloadScreenState extends State<DownloadScreen>
                     SizedBox(
                       height: 40,
                     ),
-                     NavigationBarAd(width: 320,height: 250,)
+                    if (_routePath)
+                      RichText(
+                        textAlign: TextAlign.start,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: 'Supported Link example:\n\n',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.black)),
+                            TextSpan(
+                                text: 'https://www.facebook.com/123456789/videos/123456789\n\n',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 20,
+                                    color: Colors.grey),
+                            ),
+                            TextSpan(
+                              text: 'https://www.facebook.com/Crunchyroll/videos/123456789\n',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 20,
+                                  color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    DisplayAd(
+                      width: 320,
+                      height: 250,
+                    )
                   ],
                 ),
               ),

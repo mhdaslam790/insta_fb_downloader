@@ -35,7 +35,6 @@ class _DownloadedVideoState extends State<DownloadedVideo> {
 
   @override
   void initState() {
-    // TODO: implement initState
     direct();
     super.initState();
   }

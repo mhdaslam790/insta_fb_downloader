@@ -18,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   AdMobService _adMobService =AdMobService();
   @override
   void initState() {
-    // TODO: implement initState
     _adMobService.createInterstitialAd();
     super.initState();
   }
@@ -98,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        bottomNavigationBar:NavigationBarAd(width: 320,height: 50,)
+        bottomNavigationBar:DisplayAd(width: 320,height: 50,)
     );
   }
 }
