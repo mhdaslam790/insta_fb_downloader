@@ -21,7 +21,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Directory dir = Directory('/storage/emulated/0/Movies/fb insta downloader');
-
   void createDirectory() async {
     if(await requestPermission(Permission.storage))
     {

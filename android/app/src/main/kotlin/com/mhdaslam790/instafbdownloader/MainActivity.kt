@@ -18,7 +18,7 @@ import java.io.FileOutputStream
 
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "samples.flutter.dev/battery"
+    private val CHANNEL = "MediaStoreAPI"
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

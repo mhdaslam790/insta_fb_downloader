@@ -6,8 +6,9 @@ class NavigationBarAd extends StatelessWidget {
   final int height;
  final int width;
 
-  const NavigationBarAd({Key? key, required this.height, required this.width})
+   NavigationBarAd({Key? key, required this.height, required this.width})
       : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {

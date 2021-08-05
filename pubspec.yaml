@@ -37,6 +37,7 @@ dependencies:
   permission_handler: ^8.1.4+1
   intl: ^0.17.0
   google_mobile_ads: ^0.13.2+1
+  retry: ^3.1.0
 
 
 

@@ -164,7 +164,7 @@ class _HelpScreenState extends State<HelpScreen> {
             ),
           ],
         ),
-        //bottomNavigationBar: NavigationBarAd(width: 320,height: 50,),
+        bottomNavigationBar: NavigationBarAd(width: 320,height: 50,),
       ),
     );
   }

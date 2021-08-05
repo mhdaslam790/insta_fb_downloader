@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:intl/intl.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:save_from_social_media/services/admob_service.dart';
 import 'package:save_from_social_media/services/permission.dart';
 import 'package:save_from_social_media/widgets/downloadscreenbutton.dart';
 import 'package:flutter/services.dart';
@@ -25,9 +27,9 @@ class DownloadScreen extends StatefulWidget {
 
 class _DownloadScreenState extends State<DownloadScreen>
     with SingleTickerProviderStateMixin {
-  static const platform = MethodChannel('samples.flutter.dev/battery');
+  static const platform = MethodChannel('MediaStoreAPI');
+  AdMobService _adMobService =AdMobService();
   final myController = TextEditingController();
-  late final myControllerTemp = TextEditingController();
   bool loading = false;
   double progress = 0.0;
   final Dio dio = Dio();
@@ -44,7 +46,7 @@ class _DownloadScreenState extends State<DownloadScreen>
   late File savedFile;
   late String name;
   late String pathk;
-  late bool checkSdkVersion;
+  int _i=0;
 
   Future<void> saveFileInQOrHigher(String name, String filePath) async {
     try {
@@ -117,69 +119,84 @@ class _DownloadScreenState extends State<DownloadScreen>
   }
 
   Future<void> downFacebookVideo(String url) async {
-    try {
-      RegExp regExp = RegExp(
-          r'^(?:(?:https?:)?\/\/)?(?:www\.)?facebook\.com\/[a-zA-Z0-9\.]+\/(videos)\/(?:[a-zA-Z0-9\.]+)');
-      checkUrl = regExp.hasMatch(url);
-      print(checkUrl);
-      if (checkUrl == true) {
-        text = regExp.firstMatch(url);
-        videoUrl = text!.group(0)!;
-        var check = await DirectLink.check(videoUrl);
-        print(videoUrl);
-        if (check != null) {
-          print(check[0].quality);
-          if (check.isEmpty) {
-            return;
-          } else {
-            videoUrl = check[0].link;
-            print(videoUrl);
-            downloadFile(videoUrl);
+    if(_i<=3) {
+      try {
+        RegExp regExp = RegExp(
+            r'^(?:(?:https?:)?\/\/)?(?:www\.)?facebook\.com\/[a-zA-Z0-9\.]+\/(videos)\/(?:[a-zA-Z0-9\.]+)');
+        checkUrl = regExp.hasMatch(url);
+        print(checkUrl);
+        if (checkUrl == true) {
+          text = regExp.firstMatch(url);
+          videoUrl = text!.group(0)!;
+          var check = await DirectLink.check(videoUrl);
+          print(check);
+          if (check != null) {
+            print(check[0].quality);
+            if (check.isEmpty) {
+              downFacebookVideo(url);
+            } else {
+              videoUrl = check[0].link;
+              print(videoUrl);
+              _i=4;
+              downloadFile(videoUrl);
+            }
           }
         }
+      } catch (e) {
+        print("facebook catch body $e");
+        //   while (_i < 3) {
+        //     if (_i == 2) {
+        //       _i = 0;
+        //       break;
+        //     }
+        //     _i++;
+        //     downFacebookVideo(url);
+        //   }
+        // }
       }
-    } catch (e) {
-      print(e);
     }
+    else
+      {
+
+      }
     //https://www.facebook.com/ArcadeCloudOriginals/videos/346705332874478
   }
 
   Future downloadInstagramvideo(String url) async {
-    print("in ig download section");
-    //downloadFile('https://instagram.fbom44-1.fna.fbcdn.net/v/t50.2886-16/226368077_339184327904674_7440016640559613563_n.mp4?_nc_ht=instagram.fbom44-1.fna.fbcdn.net&_nc_cat=110&_nc_ohc=z9Yt32YPTQ8AX9UpNo8&edm=APfKNqwBAAAA&ccb=7-4&oe=6107245A&oh=c94ac7b8366d842e170b81d7bd252a9d&_nc_sid=74f7ba');
+    if (_i<=3) {
+      print("in ig download section");
+      //downloadFile('https://instagram.fbom44-1.fna.fbcdn.net/v/t50.2886-16/226368077_339184327904674_7440016640559613563_n.mp4?_nc_ht=instagram.fbom44-1.fna.fbcdn.net&_nc_cat=110&_nc_ohc=z9Yt32YPTQ8AX9UpNo8&edm=APfKNqwBAAAA&ccb=7-4&oe=6107245A&oh=c94ac7b8366d842e170b81d7bd252a9d&_nc_sid=74f7ba');
 
-    try {
-      RegExp regExp = RegExp(
-          r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/p\/([a-zA-Z0-9_-]+)\/?|'
-          r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/reel\/([a-zA-Z0-9_-]+)\/?|'
-          r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/tv\/([a-zA-Z0-9_-]+)\/?');
-      checkUrl = regExp.hasMatch(url);
-      print(checkUrl);
-      if (checkUrl == true) {
-        text = regExp.firstMatch(url);
-        finalUrl = text!.group(0)! + '?__a=1';
-        print(finalUrl);
-        print('in instagram download section');
-        var response = await http.get(Uri.parse(finalUrl));
-        if (response.statusCode != null) {
-          print(response.statusCode);
-          data = json.decode(response.body);
-          videoUrl = data['graphql']['shortcode_media']['video_url'];
-          downloadFile(videoUrl);
-          setState(() {
-            myControllerTemp.text = videoUrl;
-
-            print(videoUrl);
-          });
+      try {
+        RegExp regExp = RegExp(
+            r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/p\/([a-zA-Z0-9_-]+)\/?|'
+            r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/reel\/([a-zA-Z0-9_-]+)\/?|'
+            r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/tv\/([a-zA-Z0-9_-]+)\/?');
+        checkUrl = regExp.hasMatch(url);
+        print(checkUrl);
+        if (checkUrl == true) {
+          text = regExp.firstMatch(url);
+          finalUrl = text!.group(0)! + '?__a=1';
+          print(finalUrl);
+          print('in instagram download section');
+          var response = await http.get(Uri.parse(finalUrl));
+          if (response.statusCode != null) {
+            print(response.statusCode);
+            data = json.decode(response.body);
+            videoUrl = data['graphql']['shortcode_media']['video_url'];
+            _i=4;
+            downloadFile(videoUrl);
+          }
         }
+      } catch (e) {
+        // TODO
+        print(e);
       }
-    } catch (e) {
-      // TODO
-      print(e);
     }
   }
 
   void updateUI(bool decideRoute) {
+    _adMobService.createInterstitialAd();
     setState(() {
       routePath = decideRoute;
     });
@@ -277,11 +294,36 @@ class _DownloadScreenState extends State<DownloadScreen>
                             setState(() {
                               enableButtonAndTxtField = false;
                             });
+                            _adMobService.showIntAd();
                             routePath
                                 ? await downFacebookVideo(myController.text)
                                 : await downloadInstagramvideo(
                                     myController.text);
-
+                            if(_i<=3)
+                              {
+                                _i=_i+1;
+                                routePath
+                                    ? await downFacebookVideo(myController.text)
+                                    : await downloadInstagramvideo(
+                                    myController.text);
+                              }
+                            if(_i<=3)
+                            {
+                              _i=_i+1;
+                              routePath
+                                  ? await downFacebookVideo(myController.text)
+                                  : await downloadInstagramvideo(
+                                  myController.text);
+                            }
+                            if(_i<=3)
+                            {
+                              _i=_i+1;
+                              routePath
+                                  ? await downFacebookVideo(myController.text)
+                                  : await downloadInstagramvideo(
+                                  myController.text);
+                            }
+                            _i=0;
                             setState(() {
                               enableButtonAndTxtField = true;
                             });
@@ -297,8 +339,7 @@ class _DownloadScreenState extends State<DownloadScreen>
                     SizedBox(
                       height: 40,
                     ),
-
-                    // NavigationBarAd(width: 320,height: 250,)
+                     NavigationBarAd(width: 320,height: 250,)
                   ],
                 ),
               ),

@@ -30,7 +30,6 @@ class _DownloadedVideoState extends State<DownloadedVideo> {
       } else {
         print('check your ios gallery for download f ile');
       }
-      print(dir.listSync());
     });
   }
 
