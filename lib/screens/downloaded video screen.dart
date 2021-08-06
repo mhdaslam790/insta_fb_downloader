@@ -1,7 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:open_file/open_file.dart';
 
 var path = '/storage/emulated/0/Movies/fb insta downloader';
 Directory dir = Directory(path);
@@ -64,6 +64,9 @@ class _DownloadedVideoState extends State<DownloadedVideo> {
                     child: ListTile(
                       leading: SvgPicture.asset('assets/icons/video.svg'),
                       title: Text('$fileName'),
+                      onTap: (){
+                        OpenFile.open(file.path,type: "video/mp4");
+                      },
                     ),
                   );
                 },

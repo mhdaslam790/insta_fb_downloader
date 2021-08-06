@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
 import 'package:direct_link/direct_link.dart';
@@ -15,6 +16,7 @@ import 'package:save_from_social_media/widgets/downloadscreenbutton.dart';
 import 'package:flutter/services.dart';
 import 'package:save_from_social_media/widgets/navigationbarAd.dart';
 import 'package:http/http.dart' as http;
+
 
 class DownloadScreen extends StatefulWidget {
   final bool decideDownloadRoute;
@@ -48,6 +50,8 @@ class _DownloadScreenState extends State<DownloadScreen>
   late String _name;
   late String _pathk;
   int _i = 0;
+
+
 
   Future<void> _saveFileInAndroidStorage(String name, String filePath) async {
     try {
@@ -206,7 +210,7 @@ class _DownloadScreenState extends State<DownloadScreen>
       SnackBar(
         content: Text(str),
         action: SnackBarAction(
-            label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
+            label: 'ok', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
   }
@@ -215,6 +219,11 @@ class _DownloadScreenState extends State<DownloadScreen>
   void initState() {
     _updateUI(widget.decideDownloadRoute);
     super.initState();
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -306,29 +315,29 @@ class _DownloadScreenState extends State<DownloadScreen>
 
                             _adMobService.showIntAd();
                             _routePath
-                                ? await _downFacebookVideo(_myController.text)
-                                : await _downloadInstagramvideo(
-                                    _myController.text);
+                                // ignore: unnecessary_statements
+                                ? ( await InternetConnectionChecker().hasConnection ? await _downFacebookVideo(_myController.text): _showToast(context, 'No internet connection was found,Check your internet connection and try again later'))
+                                : await InternetConnectionChecker().hasConnection ? await _downloadInstagramvideo(_myController.text):  _showToast(context, 'No internet connection was found,Check your internet connection and try again later');
                             if (_i <= 3) {
                               _i = _i + 1;
                               _routePath
-                                  ? await _downFacebookVideo(_myController.text)
-                                  : await _downloadInstagramvideo(
-                                      _myController.text);
+                              // ignore: unnecessary_statements
+                                  ? ( await InternetConnectionChecker().hasConnection ? await _downFacebookVideo(_myController.text): null) // _showToast(context, 'No internet connection was found, retrying...'))
+                                  :(await InternetConnectionChecker().hasConnection ? await _downloadInstagramvideo(_myController.text): null); // _showToast(context, 'No internet connection was found, retrying...');
                             }
                             if (_i <= 3) {
                               _i = _i + 1;
                               _routePath
-                                  ? await _downFacebookVideo(_myController.text)
-                                  : await _downloadInstagramvideo(
-                                      _myController.text);
+                              // ignore: unnecessary_statements
+                                  ? ( await InternetConnectionChecker().hasConnection ? await _downFacebookVideo(_myController.text): null) // _showToast(context, 'No internet connection was found, retrying...'))
+                                  : (await InternetConnectionChecker().hasConnection ? await _downloadInstagramvideo(_myController.text): null); //_showToast(context, 'No internet connection was found, retrying...');
                             }
                             if (_i <= 3) {
                               _i = _i + 1;
                               _routePath
-                                  ? await _downFacebookVideo(_myController.text)
-                                  : await _downloadInstagramvideo(
-                                      _myController.text);
+                              // ignore: unnecessary_statements
+                                  ? (await InternetConnectionChecker().hasConnection ? await _downFacebookVideo(_myController.text):null) // _showToast(context, 'No internet connection was found,Check your internet connection and try again later'))
+                                  : (await InternetConnectionChecker().hasConnection ? await _downloadInstagramvideo(_myController.text): null); // _showToast(context, 'No internet connection was found,Check your internet connection and try again later');
                             }
                             _i = 0;
                             setState(() {
@@ -377,6 +386,7 @@ class _DownloadScreenState extends State<DownloadScreen>
                     SizedBox(
                       height: 20,
                     ),
+                    // Text('Don\'t know how to download? click here '),
                     DisplayAd(
                       width: 320,
                       height: 250,
