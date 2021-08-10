@@ -39,6 +39,7 @@ dependencies:
   google_mobile_ads: ^0.13.2+1
   open_file: ^3.2.1
   internet_connection_checker: ^0.0.1+2
+  video_thumbnail: ^0.4.3
 
 
 

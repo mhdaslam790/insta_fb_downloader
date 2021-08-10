@@ -55,7 +55,6 @@ class _DownloadScreenState extends State<DownloadScreen>
 
   Future<void> _saveFileInAndroidStorage(String name, String filePath) async {
     try {
-      print("inqor... $filePath ... $name");
       await _platform.invokeMethod(
           'saveFileUsingMediaStoreAPI', {"filepath": filePath, "name": name});
       print("return from kotlin but in savefromQ function ");
@@ -112,12 +111,9 @@ class _DownloadScreenState extends State<DownloadScreen>
     });
 
     bool downloaded = await _saveFileToStorage(url);
-    print('in download function');
     if (downloaded) {
-      print('file downloaded');
       _showToast(context, 'File Downloaded');
     } else {
-      print('error in download');
       _showToast(context, 'Error while  Downloading file');
     }
     setState(() {
@@ -129,7 +125,7 @@ class _DownloadScreenState extends State<DownloadScreen>
     if (_i <= 3) {
       try {
         RegExp regExp = RegExp(
-            r'^(?:(?:https?:)?\/\/)?(?:www\.)?facebook\.com\/[a-zA-Z0-9\.]+\/(videos)\/(?:[a-zA-Z0-9\.]+)');
+            r'^(?:(?:https?:)?\/\/)?(?:(www|m)\.)?facebook\.com\/[a-zA-Z0-9\.]+\/(videos)\/(?:[a-zA-Z0-9\.]+)');
         _checkUrl = regExp.hasMatch(url);
         print(_checkUrl);
         if (_checkUrl == true) {
@@ -137,14 +133,12 @@ class _DownloadScreenState extends State<DownloadScreen>
           _text = regExp.firstMatch(url);
           _videoUrl = _text!.group(0)!;
           var check = await DirectLink.check(_videoUrl);
-          print(check);
           if (check != null) {
             print(check[0].quality);
             if (check.isEmpty) {
               _downFacebookVideo(url);
             } else {
               _videoUrl = check[0].link;
-              print(_videoUrl);
               _i = 4;
               _downloadFile(_videoUrl);
             }
@@ -163,20 +157,16 @@ class _DownloadScreenState extends State<DownloadScreen>
 
   Future _downloadInstagramvideo(String url) async {
     if (_i <= 3) {
-      print("in ig download section");
       try {
         RegExp regExp = RegExp(
             r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/p\/([a-zA-Z0-9_-]+)\/?|'
             r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/reel\/([a-zA-Z0-9_-]+)\/?|'
             r'^((https?):\/\/)?(www.)?instagram\.com(\/[A-Za-z0-9_.]*)?\/tv\/([a-zA-Z0-9_-]+)\/?');
         _checkUrl = regExp.hasMatch(url);
-        print(_checkUrl);
         if (_checkUrl == true) {
           _showToast(context, 'fetching download URL');
           _text = regExp.firstMatch(url);
           _finalUrl = _text!.group(0)! + '?__a=1';
-          print(_finalUrl);
-          print('in instagram download section');
           var response = await http.get(Uri.parse(_finalUrl));
           if (response.statusCode != null) {
             print(response.statusCode);
@@ -313,7 +303,7 @@ class _DownloadScreenState extends State<DownloadScreen>
                               _enableButtonAndTxtField = false;
                             });
 
-                            _adMobService.showIntAd();
+                           // _adMobService.showIntAd();
                             _routePath
                                 // ignore: unnecessary_statements
                                 ? ( await InternetConnectionChecker().hasConnection ? await _downFacebookVideo(_myController.text): _showToast(context, 'No internet connection was found,Check your internet connection and try again later'))
@@ -331,6 +321,13 @@ class _DownloadScreenState extends State<DownloadScreen>
                               // ignore: unnecessary_statements
                                   ? ( await InternetConnectionChecker().hasConnection ? await _downFacebookVideo(_myController.text): null) // _showToast(context, 'No internet connection was found, retrying...'))
                                   : (await InternetConnectionChecker().hasConnection ? await _downloadInstagramvideo(_myController.text): null); //_showToast(context, 'No internet connection was found, retrying...');
+                            }
+                            if (_i <= 3) {
+                              _i = _i + 1;
+                              _routePath
+                              // ignore: unnecessary_statements
+                                  ? (await InternetConnectionChecker().hasConnection ? await _downFacebookVideo(_myController.text):null) // _showToast(context, 'No internet connection was found,Check your internet connection and try again later'))
+                                  : (await InternetConnectionChecker().hasConnection ? await _downloadInstagramvideo(_myController.text): null); // _showToast(context, 'No internet connection was found,Check your internet connection and try again later');
                             }
                             if (_i <= 3) {
                               _i = _i + 1;
@@ -389,8 +386,8 @@ class _DownloadScreenState extends State<DownloadScreen>
                     // Text('Don\'t know how to download? click here '),
                     DisplayAd(
                       width: 320,
-                      height: 250,
-                    )
+                     height: 250,
+                   )
                   ],
                 ),
               ),

@@ -29,12 +29,10 @@ class _MyAppState extends State<MyApp> {
     new Directory(dir.path).create()
     // The created directory is returned as a Future.
         .then((Directory directory) {
-    print("in direct function ${directory.path}");
     });
     }
     else
     {
-    print('already created');
     }
     }
   }
@@ -58,15 +56,6 @@ class _MyAppState extends State<MyApp> {
 
         ),
       ),
-      // darkTheme: ThemeData.dark().copyWith(
-      //     primaryColor: Color(0xFF090E110),
-      //     accentColor: Color(0xFF323739),
-      //     scaffoldBackgroundColor: Color(0xFF0C0D0E),
-      //     textTheme: TextTheme(
-      //       headline1: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.white70),
-      //       headline2: TextStyle(height: 2,fontSize: 12,color: Colors.white70 ),
-      //     )
-      // ),
       home: HomeScreen(),
     );
   }
