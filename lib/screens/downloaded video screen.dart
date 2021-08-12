@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:save_from_social_media/widgets/navigationbarAd.dart';
 import 'package:save_from_social_media/widgets/videoitem.dart';
 
 var path = '/storage/emulated/0/Movies/fb insta downloader';
@@ -15,6 +16,7 @@ class DownloadedVideo extends StatefulWidget {
 
 class _DownloadedVideoState extends State<DownloadedVideo> {
   var fileList;
+
   bool checkFileExist = false;
 
   void direct() async {
@@ -61,11 +63,12 @@ class _DownloadedVideoState extends State<DownloadedVideo> {
                   File file = fileList[index];
                   String fileName = file.path.split('/').last;
                   return Card(
-                    child: VideoItem(video: file.path, name: fileName),
+                    child: VideoItem(file: file, name: fileName),
                   );
                 },
               ),
             ),
+      bottomNavigationBar: DisplayAd(width: 320,height: 50,),
     );
   }
 }

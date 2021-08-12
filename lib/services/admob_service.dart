@@ -4,12 +4,12 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 class AdMobService {
   static String get bannerAdunitId =>
       Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/6300978111'
+          ? 'ca-app-pub-9776756882334647/7166074072'
           : 'ca-app-pub-3940256099942544/6300978111';
 
   static String get interstitialAdId =>
       Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/1033173712'
+          ? 'ca-app-pub-9776756882334647/8730437186'
           : 'ca-app-pub-3940256099942544/1033173712';
 
    InterstitialAd? _interstitialAd;
@@ -47,7 +47,7 @@ class AdMobService {
               _numberOfAtemptLoad =0;
             },
             onAdFailedToLoad: (LoadAdError error){
-              print('failed to load');
+              print('failed to load interstitial ad');
               // ignore: unnecessary_statements
               _numberOfAtemptLoad+1;
               _interstitialAd = null;

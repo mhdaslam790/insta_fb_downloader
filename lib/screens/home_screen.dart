@@ -35,8 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: <Widget>[
             IconButton(
                 onPressed: ()  {
-
-                 // _adMobService.showIntAd();
+                  _adMobService.showIntAd();
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => HelpScreen()));
                 },
@@ -51,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MenuCard(
                   title: 'Facebook\nDownloader',
                   function: () {
-                   // _adMobService.showIntAd();
+                    _adMobService.showIntAd();
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -68,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MenuCard(
                   title: 'Instagram\nDownloader',
                   function: () {
-                    //_adMobService.showIntAd();
+                    _adMobService.showIntAd();
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -85,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MenuCard(
                   title: 'Downloaded\nVideos',
                   function: () {
-                   // _adMobService.showIntAd();
+                    _adMobService.showIntAd();
                     Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -1,40 +1,56 @@
-
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
+import 'package:save_from_social_media/screens/downloaded%20video%20screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:share/share.dart';
+import 'package:device_info/device_info.dart';
 
 // ignore: must_be_immutable
 class VideoItem extends StatefulWidget {
-  String video;
+  File file;
   String name;
 
-   VideoItem({Key? key,required this.video,required this.name}) : super(key: key);
+   VideoItem({Key? key,required this.file,required this.name}) : super(key: key);
 
   @override
   _VideoItemState createState() => _VideoItemState();
 }
 
 class _VideoItemState extends State<VideoItem> {
- late String filePath;
+ late File file;
  late String fileName;
  late Future futureThumbnail;
+ late DeviceInfoPlugin deviceInfoPlugin;
 
  Future<Uint8List?> getThumbnail() async {
    Uint8List? unit8List = await VideoThumbnail.thumbnailData(
-     video: filePath,
+     video: file.path,
      imageFormat: ImageFormat.JPEG,
      maxWidth: 128,
      quality: 20,
    );
    return unit8List;
  }
+ //  Future<bool> checkSDK() async {
+ //    deviceInfoPlugin =  DeviceInfoPlugin();
+ //    final androidInfo = await deviceInfoPlugin.androidInfo;
+ //    if(androidInfo.version.sdkInt<=28) {
+ //      return true;
+ //    }
+ //    else
+ //      {
+ //        return false;
+ //      }
+ // }
 
  @override
   void initState() {
     // TODO: implement initState
    fileName = widget.name;
-   filePath = widget.video;
+   file = widget.file;
     super.initState();
    futureThumbnail = getThumbnail();
   }
@@ -51,7 +67,10 @@ class _VideoItemState extends State<VideoItem> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (ConnectionState.done == snapshot.connectionState) {
             return Container(
-                height: 100, width: 50, child: Image.memory(snapshot.data));
+              decoration: BoxDecoration(
+                color: Colors.black
+              ),
+                height: 160, width: 80, child: Image.memory(snapshot.data));
           } else {
             return SizedBox(
                 height: 50, width: 50, child: CircularProgressIndicator());
@@ -60,7 +79,40 @@ class _VideoItemState extends State<VideoItem> {
       ),
       title: Text('$fileName'),
       onTap: (){
-        OpenFile.open(filePath,type: "video/mp4");
+        showDialog(context: context, builder: (context) => Dialog(
+          child: Container(
+            padding:  EdgeInsets.all(10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                    title: Text("Open"),
+                    onTap: () {
+                      OpenFile.open(file.path,type: "video/mp4");
+                      Navigator.pop(context);
+                    }),
+                // if(await checkSDK())
+                // ListTile(
+                //     title: Text("Delete"),
+                //     onTap: () {
+                //       setState(() {
+                //         file.delete();
+                //       });
+                //
+                //       Navigator.pushReplacement(context, MaterialPageRoute(
+                //           builder: (context) =>
+                //               DownloadedVideo()));
+                //     }),
+                ListTile(
+                    title: Text("Share"),
+                    onTap: () {
+                      Share.shareFiles([file.path],text: 'sharing file');
+                      Navigator.pop(context);
+                    }),
+              ],
+            ),
+          ),
+        ));
       },
     );
   }
