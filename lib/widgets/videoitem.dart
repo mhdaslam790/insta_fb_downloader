@@ -3,10 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
-import 'package:save_from_social_media/screens/downloaded%20video%20screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:share/share.dart';
-import 'package:device_info/device_info.dart';
 
 // ignore: must_be_immutable
 class VideoItem extends StatefulWidget {
@@ -23,7 +21,6 @@ class _VideoItemState extends State<VideoItem> {
  late File file;
  late String fileName;
  late Future futureThumbnail;
- late DeviceInfoPlugin deviceInfoPlugin;
 
  Future<Uint8List?> getThumbnail() async {
    Uint8List? unit8List = await VideoThumbnail.thumbnailData(
@@ -34,17 +31,6 @@ class _VideoItemState extends State<VideoItem> {
    );
    return unit8List;
  }
- //  Future<bool> checkSDK() async {
- //    deviceInfoPlugin =  DeviceInfoPlugin();
- //    final androidInfo = await deviceInfoPlugin.androidInfo;
- //    if(androidInfo.version.sdkInt<=28) {
- //      return true;
- //    }
- //    else
- //      {
- //        return false;
- //      }
- // }
 
  @override
   void initState() {
